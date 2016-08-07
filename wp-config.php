@@ -18,18 +18,38 @@
  * @package WordPress
  */
 
+/* 
+ * These environment variables are required.
+ */
+function require_env( $name ) {
+  if ( getenv($name) ) {
+    return getenv($name);
+  }
+  throw new Exception("Server setting not found: ".$name);
+}
+/*
+ * These environment variables are optional.
+ */
+function env_salt( $name ) {
+  if ( getenv($name) ) {
+    return getenv($name);
+  }
+  return 'Default localhost salt';
+}
+
 // ** MySQL settings - You can get this info from your web host ** //
+$mysql = parse_url(require_env('HY_CLEARDB_DATABASE_URL'));
 /** The name of the database for WordPress */
-define('DB_NAME', 'hayes');
+define('DB_NAME', trim($mysql['path'], '/'));
 
 /** MySQL database username */
-define('DB_USER', 'hayes_user');
+define('DB_USER', $mysql['user']);
 
 /** MySQL database password */
-define('DB_PASSWORD', 'hayes');
+define('DB_PASSWORD', $mysql['pass']);
 
 /** MySQL hostname */
-define('DB_HOST', 'localhost');
+define('DB_HOST', $mysql['host']);
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8mb4');
@@ -46,14 +66,14 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
-define('AUTH_KEY',         '/%ljY22hb7UCJuyt!Hqz@V~n]hO[y!/IPU@k|iI5oId~EB%ri)kVk=gxTx}p+#?3');
-define('SECURE_AUTH_KEY',  'IkhQ:)18xu9V5KLxStjJ+fB@,WB.fxbjP5Jla5S*&K&WM~)o64stRRgvSt0j2a5(');
-define('LOGGED_IN_KEY',    '&d$N#;*@Xc+qwcqY%{hz[Aj{BPo{RZv1tho|E[T,#BS:T`LquN&hD->wsT;o54Bx');
-define('NONCE_KEY',        's30~Rx<Ncq@AxO2nnmPmMX`vcI7<x+>kO_zqzDd6n!hRWJbdUTDYq5F(9?-E|zDq');
-define('AUTH_SALT',        'aM~dyRy^PKv5[ga@ra4Fb$iDxf42#7)zb/!wPq0w0&iM-JH:uw/N?d|pm-<RQ@h2');
-define('SECURE_AUTH_SALT', '~Tb0y-u2HeM4]_AQ?HU{+US#0<dV#pwm>F[b4rR+(QqN|f<[sm{A)hZbu8,jcNGf');
-define('LOGGED_IN_SALT',   'sBYq3XK-nuMZgj}NwA&+HSeIdQ/br>&!^:K8+/PL18}x h6~Z:?ivb}PEIk4-mKZ');
-define('NONCE_SALT',       '!pDi,JO4v |d(NfCvtqs7-_t1@VTsI:3>0^rixn&rA[TPt 06$o_DpC}XFgDGUw-');
+define('AUTH_KEY',         env_salt('AUTH_KEY'));
+define('SECURE_AUTH_KEY',  env_salt('SECURE_AUTH_KEY'));
+define('LOGGED_IN_KEY',    env_salt('LOGGED_IN_KEY'));
+define('NONCE_KEY',        env_salt('NONCE_KEY'));
+define('AUTH_SALT',        env_salt('AUTH_SALT'));
+define('SECURE_AUTH_SALT', env_salt('SECURE_AUTH_SALT'));
+define('LOGGED_IN_SALT',   env_salt('LOGGED_IN_SALT'));
+define('NONCE_SALT',       env_salt('NONCE_SALT'));
 
 /**#@-*/
 
